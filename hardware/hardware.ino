@@ -143,6 +143,9 @@
   /* Forward declarations for display functions */
   static int  bmp280_init(void);
   static void draw_shell(void);
+  static void draw_startup_screen(void);
+  static void startup_step_complete(int step, int total, const char* label, bool success);
+  static void startup_step_waiting(const char* label, int dots);
   static void draw_label(Rect r, const char *text);
   static void draw_card(Rect r, const char *value, const char *unit, float raw_val, uint16_t val_color, const unsigned char* icon = nullptr);
   static void draw_diff(Rect r, const char *old_text, const char *new_text, uint16_t fg, uint16_t bg);
@@ -222,51 +225,7 @@
   
   #ifndef MQTT_H
   #include "mqtt.h"
-  #endif
-  
-  
-  void setup() {
-    Serial.begin(115200);  // INIT SERIAL
-  
-    // INITIALIZE ALL SENSORS AND DEVICES
-    Wire.begin(I2C_SDA, I2C_SCL);
-  
-    Serial.println(F("DHT22 + BMP280 + ILI9341 Weather Display"));
-    dht.begin();
-  
-    // CREATE DISPLAY MUTEX BEFORE ANY DRAWING BEGINS
-    tft_mutex = xSemaphoreCreateMutex();
-  
-    tft.begin();
-    tft.setRotation(0);
-    tft.setTextWrap(false);
-  
-    bg_color     = tft.color565(18,  18,  18);
-    card_color   = tft.color565(37,  37,  37);
-    label_color  = tft.color565(160, 160, 160);
-    value_color  = tft.color565(255, 255, 255);
-    good_color   = tft.color565(0,   230, 118);
-    bad_color    = tft.color565(255, 82,  82);
-    accent_color = tft.color565(100, 180, 255);
-    color_cold   = tft.color565(0,   191, 255);  // Deep Sky Blue
-    color_comf   = tft.color565(0,   230, 118);  // Match good_color
-    color_warm   = tft.color565(255, 165, 0);    // Orange
-    color_hot    = tft.color565(255, 69,  0);    // Red-Orange
-  
-    /* Add all other necessary sensor Initializations and Configurations here */
-    pinMode(SOIL_PIN,     INPUT);
-    pinMode(BTN_NEXT_PIN, INPUT_PULLUP);
-    pinMode(BTN_PREV_PIN, INPUT_PULLUP);
-    bmp280_init();
-    if (xSemaphoreTake(tft_mutex, portMAX_DELAY) == pdTRUE) {
-      draw_shell();
-      xSemaphoreGive(tft_mutex);
-    }
-  
-    initialize();           // INIT WIFI, MQTT & NTP
-    vButtonCheckFunction(); // BUTTON TASK HANDLES PAGE SWITCHING
-  }
-  
+  #endif  
   
   void loop() {
     // put your main code here, to run repeatedly:

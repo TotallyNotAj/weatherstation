@@ -180,23 +180,20 @@ void checkHEAP(const char* Name){
 
 
 void initialize(void){
-  vNTPFunction();     // INIT NTP PROTOCOL FOR TIME KEEPING   
+  vNTPFunction();   // start NTP task (waits for WiFi internally)
 
-  //CONNECT TO WIFI
-  Serial.printf("Connecting to %s \n", ssid);
-  WiFi.begin(ssid, password);
-  
-  while (WiFi.status() != WL_CONNECTED) {
-      vTaskDelay(1000 / portTICK_PERIOD_MS); 
+  if (WiFi.status() != WL_CONNECTED) {
+    // Only runs if WiFi wasn't already connected by setup()
+    Serial.printf("Connecting to %s \n", ssid);
+    WiFi.begin(ssid, password);
+    while (WiFi.status() != WL_CONNECTED) {
+      vTaskDelay(1000 / portTICK_PERIOD_MS);
       Serial.print(".");
+    }
+    Serial.println("\n\n***** Wi-Fi CONNECTED! *****\n\n");
   }
 
-  Serial.println("\n\n***** Wi-Fi CONNECTED! *****\n\n");
-  vNTPFunction();
-   
-  initMQTT();          // INIT MQTT  
-  vUpdateFunction();
-   
+  initMQTT();
 }
 
 /*
