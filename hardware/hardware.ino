@@ -70,8 +70,8 @@
   #define SOIL_PIN     33   // Capacitive soil moisture sensor analog output pin
   
   // SOIL SENSOR CALIBRATION (adjust these after testing with your sensor)
-  #define SOIL_DRY_VAL  320  // Raw ADC value in dry air / dry soil
-  #define SOIL_WET_VAL  600  // Raw ADC value in water / saturated soil
+  #define SOIL_DRY_VAL  2800  // Raw ADC value in dry air / dry soil
+  #define SOIL_WET_VAL  1200  // Raw ADC value in water / saturated soil
   
   // BUTTON PIN DEFINITIONS
   #define BTN_NEXT_PIN  25   // Next page button
@@ -105,8 +105,8 @@
   static uint16_t    mqtt_port     = 1883;
   
   // WIFI CREDENTIALS
-  const char* ssid     = "MonaConnect";  // Add your Wi-Fi ssid
-  const char* password = "";             // Add your Wi-Fi password
+  const char* ssid     = "Digicel_WiFi_h2Ue";  // Add your Wi-Fi ssid
+  const char* password = "c2SMzdsZ";             // Add your Wi-Fi password
   
   
   // TASK HANDLES
