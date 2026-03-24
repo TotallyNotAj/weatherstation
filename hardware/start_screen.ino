@@ -161,7 +161,7 @@ static void startup_step_waiting(const char *label, int dots) {
 
 //   - the splash screen goes up immediately after the display is ready
 //   - WiFi is connected here (with live dot animation) before initialize() runs
-//   - after initialize() we poll for MQTT and NTP so each gets its own
+//   - after initialize() poll for MQTT and NTP so each gets its own
 void setup() {
 
   Serial.begin(115200);
@@ -204,7 +204,7 @@ void setup() {
 
 
   // Step 1 — WiFi
-  // Connect here so we can show animated dots while waiting.
+  // Connect here animated dots while waiting.
   // initialize() below will see WiFi is already up and skip its own connect.
   WiFi.begin(ssid, password);
   {
