@@ -235,8 +235,7 @@ void setup() {
 
   // Step 2 — MQTT
   // initialize() spins up the MQTT and NTP FreeRTOS tasks then returns.
-  // We poll mqtt.connected() until the broker handshake completes or
-  // we hit the 12 s timeout — the task will keep retrying either way.
+  // poll mqtt.connected() until the broker handshake completes
   if (xSemaphoreTake(tft_mutex, pdMS_TO_TICKS(80)) == pdTRUE) {
     startup_step_waiting("Starting services", 1);
     xSemaphoreGive(tft_mutex);
