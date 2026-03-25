@@ -1,3 +1,5 @@
+#include "background.h"
+
 // ####################################################################
 // #                    STARTUP / STARTSCREEN SCREEN                       #
 // ####################################################################
@@ -22,7 +24,7 @@
 // should hold tft_mutex before calling.
 static void draw_startup_screen(void) {
 
-  tft.fillScreen(bg_color);
+  tft.drawRGBBitmap(0, 0, (uint16_t*)background, 240, 320);
 
   // Title
   tft.setFont(&FreeSansBold18pt7b);
@@ -86,7 +88,7 @@ static void draw_startup_screen(void) {
   // Footer text at the very bottom of the screen
   tft.setFont(NULL);
   tft.setTextSize(1);
-  tft.setTextColor(tft.color565(64, 64, 64));
+  tft.setTextColor(value_color);
   {
     int16_t  x1, y1;
     uint16_t w, h;
@@ -122,7 +124,7 @@ static void startup_step_complete(int step, int total,
   }
 
   // Clear the status line and print the new message centred
-  tft.fillRect(0, STARTSCREEN_STATUS_Y, SCREEN_W, 14, bg_color);
+  tft.drawRGBBitmap(0, STARTSCREEN_STATUS_Y, (uint16_t*)background + (STARTSCREEN_STATUS_Y * 240), 240, 14);
   tft.setFont(NULL);
   tft.setTextSize(1);
   tft.setTextColor(success ? good_color : bad_color);
@@ -145,7 +147,7 @@ static void startup_step_waiting(const char *label, int dots) {
   char buf[40];
   snprintf(buf, sizeof(buf), "%s%.*s   ", label, dots, "...");
 
-  tft.fillRect(0, STARTSCREEN_STATUS_Y, SCREEN_W, 14, bg_color);
+  tft.drawRGBBitmap(0, STARTSCREEN_STATUS_Y, (uint16_t*)background + (STARTSCREEN_STATUS_Y * 240), 240, 14);
   tft.setFont(NULL);
   tft.setTextSize(1);
   tft.setTextColor(accent_color);
@@ -180,7 +182,7 @@ void setup() {
   // Colour palette — identical to the original setup()
   bg_color     = tft.color565(18,  18,  18);
   card_color   = tft.color565(37,  37,  37);
-  label_color  = tft.color565(160, 160, 160);
+  label_color  = tft.color565(255, 255, 255);
   value_color  = tft.color565(255, 255, 255);
   good_color   = tft.color565(0,   230, 118);
   bad_color    = tft.color565(255, 82,  82);
