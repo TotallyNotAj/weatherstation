@@ -105,8 +105,8 @@
   static uint16_t    mqtt_port     = 1883;
   
   // WIFI CREDENTIALS
-  const char* ssid     = "Digicel_WiFi_h2Ue";  // Add your Wi-Fi ssid
-  const char* password = "c2SMzdsZ";             // Add your Wi-Fi password
+  const char* ssid     = "MonaConnect";  // Add your Wi-Fi ssid
+  const char* password = "";             // Add your Wi-Fi password
   
   
   // TASK HANDLES
