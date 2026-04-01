@@ -207,7 +207,7 @@
   font-size: 11px;
   line-height: 1.5;
 }
-.console-time  { color: rgba(168,230,163,0.7); white-space: nowrap; flex-shrink: 0; }
+.console-time  { color: rgba(50, 157, 43, 0.7); white-space: nowrap; flex-shrink: 0; }
 .console-json  { color: var(--txt-muted); word-break: break-all; }
 .console-empty { color: var(--txt-muted); font-size: 12px; text-align: center; margin-top: 60px; }
 

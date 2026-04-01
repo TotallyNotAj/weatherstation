@@ -26,6 +26,9 @@ __pycache__
 
 # Virtual Environment Folder
 env 
+env/
+.venv/
+venv/
 
 # Environment Variables
 .env 
