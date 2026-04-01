@@ -324,7 +324,7 @@
         doc["humidity"]    = h;
         doc["heatindex"]   = isNumber(hi)  ? hi  : 0;
         doc["pressure"]    = isNumber(p)   ? p   : 0;
-        doc["altitude"]    = isNumber(alt) ? alt : 0;
+        doc["altitude"]    = isNumber(p) ? alt : 0;
         doc["soil"]        = soil;
   
         // 4. Serialize / Convert JSON object to JSON string and store in message array

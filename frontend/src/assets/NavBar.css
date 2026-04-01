@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap');
+
+.v-toolbar {
+  background: transparent !important;
+  border-bottom: 1px solid var(--nav-border) !important;
+  font-family: 'DM Mono', monospace !important;
+  transition: border-color 0.3s ease;
+}
+
+.route {
+  text-decoration: none;
+  margin-left: 6px;
+  margin-right: 6px;
+}
+
+.nav-group {
+  display: inline-flex;
+  align-items: center;
+  transform: translateX(-14px);
+}
+
+.nav-btn {
+  font-family: 'DM Mono', monospace !important;
+  font-size: 15px !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  color: var(--txt-muted) !important;
+  transition: color 0.2s ease !important, background-color 0.2s ease !important;
+}
+
+.nav-btn:hover {
+  color: var(--txt) !important;
+}
+
+.nav-active {
+  color: #579ac2 !important;
+  background: rgba(126, 207, 255, 0.12) !important;
+  border-radius: 8px !important;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--txt);
+  cursor: pointer;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  transition: all 0.25s ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--glass-hover-border);
+  transform: translateY(-1px);
+}

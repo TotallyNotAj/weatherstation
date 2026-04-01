@@ -1,0 +1,214 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&display=swap');
+
+.analysis {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: var(--page-bg);
+  font-family: 'DM Mono', monospace;
+  color: var(--txt);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.bg-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.15;
+  pointer-events: none;
+  animation: drift 18s ease-in-out infinite alternate;
+}
+
+.orb-1 { width: 600px; height: 600px; background: #1a56db; top: -200px; left: -100px; animation-delay: 0s; }
+.orb-2 { width: 500px; height: 500px; background: #0e9f6e; top: 30%; right: -150px; animation-delay: -6s; }
+.orb-3 { width: 400px; height: 400px; background: #7e3af2; bottom: -100px; left: 30%; animation-delay: -12s; }
+
+@keyframes drift {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(40px, 30px) scale(1.1); }
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 20px;
+  color: var(--txt);
+  transition: border-color 0.3s;
+}
+
+.glass-card:hover {
+  border-color: var(--glass-hover-border);
+}
+
+.section-label {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--txt-muted);
+}
+
+.an-field .v-field__outline {
+  border-color: var(--glass-border) !important;
+}
+
+.an-field .v-label {
+  color: var(--txt-muted) !important;
+  font-size: 12px;
+}
+
+.an-field input {
+  color: var(--txt) !important;
+  font-family: 'DM Mono', monospace;
+}
+
+.analysis-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 6px;
+}
+
+.analyze-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 22px;
+  border-radius: 24px;
+  border: 1px solid rgba(126,207,255,0.4);
+  background: rgba(126,207,255,0.08);
+  color: #579ac2;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.analyze-btn:hover {
+  background: rgba(126,207,255,0.18);
+  border-color: #579ac2;
+}
+
+.analyze-btn.loading {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.unit-toggle {
+  display: flex;
+  width: fit-content;
+  background: var(--panel-soft);
+  border: 1px solid var(--glass-border);
+  border-radius: 30px;
+  padding: 3px;
+}
+
+.toggle-btn {
+  padding: 5px 18px;
+  border-radius: 24px;
+  border: none;
+  background: transparent;
+  color: var(--txt-muted);
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.toggle-btn.active {
+  background: var(--panel-strong);
+  color: var(--txt);
+}
+
+.mmar-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 130px;
+  padding: 16px;
+}
+
+.mmar-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mmar-title {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.mmar-avg {
+  font-family: 'DM Mono', monospace;
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.mmar-unit {
+  font-size: 13px;
+  opacity: 0.6;
+  margin-left: 2px;
+}
+
+.mmar-stats {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid var(--line-border);
+}
+
+.mmar-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.mmar-stat-label {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--txt-muted);
+}
+
+.mmar-stat-val {
+  font-size: 12px;
+  color: var(--txt);
+  font-weight: 500;
+}
+
+.chart-card {
+  padding: 20px;
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.chart-title {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--txt-muted);
+}
+
+@media (max-width: 600px) {
+  .analysis-actions {
+    align-items: stretch;
+  }
+
+  .analyze-btn {
+    width: 100%;
+  }
+}
