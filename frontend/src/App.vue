@@ -49,7 +49,7 @@ body {
 .app-shell.theme-dark {
   --page-bg: #040d1a;
   --txt: #e8f0ff;
-  --txt-muted: rgba(200,215,255,0.45);
+  --txt-muted: rgba(255, 222, 206, 0.45);
   --glass-bg: rgba(255,255,255,0.05);
   --glass-border: rgba(255,255,255,0.1);
   --glass-hover-border: rgba(255,255,255,0.18);

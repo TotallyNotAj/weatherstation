@@ -67,15 +67,16 @@
   #define DHTTYPE      DHT22
   
   // SOIL MOISTURE SENSOR PIN DEFINITIONS
-  #define SOIL_PIN     33   // Capacitive soil moisture sensor analog output pin
+  #define SOIL_PIN     32   // Capacitive soil moisture sensor analog output pin
   
   // SOIL SENSOR CALIBRATION (adjust these after testing with your sensor)
   #define SOIL_DRY_VAL  2800  // Raw ADC value in dry air / dry soil
   #define SOIL_WET_VAL  1200  // Raw ADC value in water / saturated soil
   
   // BUTTON PIN DEFINITIONS
-  #define BTN_NEXT_PIN  25   // Next page button
-  #define BTN_PREV_PIN  26   // Previous page button
+  #define BTN_NEXT_PIN  33   // Next page button
+  #define BTN_PREV_PIN  27   // Previous page button
+  #define BTN_EXTRA 2
   #define BTN_DEBOUNCE  200  // Debounce time in ms
   
   // DISPLAY LAYOUT DEFINITIONS

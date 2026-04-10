@@ -48,6 +48,30 @@
                   @click="setUnit('F')"
                 >°F</button>
               </div>
+              <div class="unit-toggle">
+                <button
+                  class="toggle-btn"
+                  :class="{ active: altitudeUnit === 'm' }"
+                  @click="setAltitudeUnit('m')"
+                >m</button>
+                <button
+                  class="toggle-btn"
+                  :class="{ active: altitudeUnit === 'ft' }"
+                  @click="setAltitudeUnit('ft')"
+                >ft</button>
+              </div>
+              <div class="unit-toggle">
+                <button
+                  class="toggle-btn"
+                  :class="{ active: pressureUnit === 'hPa' }"
+                  @click="setPressureUnit('hPa')"
+                >hPa</button>
+                <button
+                  class="toggle-btn"
+                  :class="{ active: pressureUnit === 'mb' }"
+                  @click="setPressureUnit('mb')"
+                >mb</button>
+              </div>
             </div>
           </div>
         </v-col>
@@ -181,7 +205,7 @@ more(Highcharts)
 
 const AppStore = useAppStore()
 const Mqtt = useMqttStore()
-const { tempUnit, themeMode } = storeToRefs(AppStore)
+const { tempUnit, altitudeUnit, pressureUnit, themeMode } = storeToRefs(AppStore)
 
 // Holds the selected analysis range from the date inputs.
 const start = ref('')
@@ -213,18 +237,30 @@ const mmarMetrics = [
   { key: 'temperature', label: 'Temperature', unit: 'temp', icon: 'mdi:mdi-thermometer', color: '#ff8a65' },
   { key: 'humidity', label: 'Humidity', unit: '%', icon: 'mdi:mdi-water-percent', color: '#579ac2' },
   { key: 'heatindex', label: 'Heat Index', unit: 'temp', icon: 'mdi:mdi-thermometer-water', color: '#ffd86e' },
-  { key: 'pressure', label: 'Pressure', unit: 'hPa', icon: 'mdi:mdi-gauge', color: '#66b85f' },
-  { key: 'altitude', label: 'Altitude', unit: 'm', icon: 'mdi:mdi-waves-arrow-up', color: '#8760b5' },
+  { key: 'pressure', label: 'Pressure', unit: 'pressure', icon: 'mdi:mdi-gauge', color: '#66b85f' },
+  { key: 'altitude', label: 'Altitude', unit: 'altitude', icon: 'mdi:mdi-waves-arrow-up', color: '#8760b5' },
   { key: 'soil', label: 'Soil', unit: '%', icon: 'mdi:mdi-sprout', color: '#f9a875' },
 ]
 
 const charts = {}
 
 const tempUnitLabel = computed(() => `°${tempUnit.value}`)
+const altitudeUnitLabel = computed(() => altitudeUnit.value)
+const pressureUnitLabel = computed(() => pressureUnit.value)
 
 // Updates the shared temperature unit used across pages.
 const setUnit = (unit) => {
   tempUnit.value = unit
+}
+
+// Updates the shared altitude unit used across pages.
+const setAltitudeUnit = (unit) => {
+  altitudeUnit.value = unit
+}
+
+// Updates the shared pressure unit used across pages.
+const setPressureUnit = (unit) => {
+  pressureUnit.value = unit
 }
 
 // Safely converts backend values into usable numbers.
@@ -240,16 +276,42 @@ const toDisplayTemp = (value) => {
   return tempUnit.value === 'F' ? AppStore.toFahrenheit(num) : num
 }
 
+// Converts altitude values into the selected distance unit.
+const toDisplayAltitude = (value) => {
+  const num = toNum(value)
+  if (num == null) return null
+  return altitudeUnit.value === 'ft' ? AppStore.toFeet(num) : num
+}
+
+// Pressure uses equivalent values for hPa and mb, so only the label changes.
+const toDisplayPressure = (value) => {
+  const num = toNum(value)
+  if (num == null) return null
+  return AppStore.convertPressure(num)
+}
+
 // Formats MMAR values while converting temperature metrics when needed.
 const formatMetricValue = (key, value) => {
   const num = toNum(value)
   if (num == null) return null
-  const display = key === 'temperature' || key === 'heatindex' ? toDisplayTemp(num) : num
+  const display =
+    key === 'temperature' || key === 'heatindex'
+      ? toDisplayTemp(num)
+      : key === 'altitude'
+        ? toDisplayAltitude(num)
+        : key === 'pressure'
+          ? toDisplayPressure(num)
+          : num
   return display == null ? null : display.toFixed(1)
 }
 
 // Swaps card units between the shared temperature label and fixed units.
-const metricUnit = (metric) => metric.unit === 'temp' ? tempUnitLabel.value : metric.unit
+const metricUnit = (metric) => {
+  if (metric.unit === 'temp') return tempUnitLabel.value
+  if (metric.unit === 'altitude') return altitudeUnitLabel.value
+  if (metric.unit === 'pressure') return pressureUnitLabel.value
+  return metric.unit
+}
 
 // Keeps chart text and borders in sync with the active theme.
 const chartColors = () => ({
@@ -332,8 +394,8 @@ const renderCharts = () => {
     const temperature = toDisplayTemp(row.temperature)
     const heatindex = toDisplayTemp(row.heatindex)
     const humidity = toNum(row.humidity)
-    const pressure = toNum(row.pressure)
-    const altitude = toNum(row.altitude)
+    const pressure = toDisplayPressure(row.pressure)
+    const altitude = toDisplayAltitude(row.altitude)
     const soil = toNum(row.soil)
 
     if (timestamp == null) return
@@ -387,6 +449,48 @@ const renderCharts = () => {
     },
   }, false)
 
+  charts.alt.yAxis[0].update({
+    labels: {
+      style: { color: chartColors().muted, fontSize: '10px' },
+      formatter() {
+        return `${this.value}${altitudeUnitLabel.value}`
+      },
+    },
+    title: {
+      text: `Altitude (${altitudeUnitLabel.value})`,
+      style: { color: chartColors().title, fontSize: '10px' },
+    },
+  }, false)
+
+  charts.alt.update({
+    tooltip: {
+      formatter() {
+        return `${Highcharts.dateFormat('%A, %b %e, %H:%M', this.x)}<br/>Altitude: <b>${this.y.toFixed(2)}${altitudeUnitLabel.value}</b>`
+      },
+    },
+  }, false)
+
+  charts.press.yAxis[0].update({
+    labels: {
+      style: { color: chartColors().muted, fontSize: '10px' },
+      formatter() {
+        return `${this.value}${pressureUnitLabel.value}`
+      },
+    },
+    title: {
+      text: `Pressure (${pressureUnitLabel.value})`,
+      style: { color: chartColors().title, fontSize: '10px' },
+    },
+  }, false)
+
+  charts.press.update({
+    tooltip: {
+      formatter() {
+        return `${Highcharts.dateFormat('%A, %b %e, %H:%M', this.x)}<br/>Pressure: <b>${this.y.toFixed(2)}${pressureUnitLabel.value}</b>`
+      },
+    },
+  }, false)
+
   charts.scatter1.xAxis[0].setTitle({ text: `Temperature (${tempUnitLabel.value})` }, false)
   charts.scatter1.yAxis[0].setTitle({ text: `Heat Index (${tempUnitLabel.value})` }, false)
   charts.scatter2.yAxis[0].setTitle({ text: `Heat Index (${tempUnitLabel.value})` }, false)
@@ -408,6 +512,8 @@ const renderCharts = () => {
   }, false)
 
   charts.temp.redraw()
+  charts.press.redraw()
+  charts.alt.redraw()
   charts.scatter1.redraw()
   charts.scatter2.redraw()
 }
@@ -466,7 +572,17 @@ const createCharts = () => {
   })
 
   charts.press = Highcharts.chart('an-chart-press', {
-    ...HC({ xAxis: { type: 'datetime' } }),
+    ...HC({
+      xAxis: { type: 'datetime' },
+      yAxis: {
+        title: { text: `Pressure (${pressureUnitLabel.value})`, style: { color: chartColors().title, fontSize: '10px' } },
+      },
+      tooltip: {
+        formatter() {
+          return `${Highcharts.dateFormat('%A, %b %e, %H:%M', this.x)}<br/>Pressure: <b>${this.y.toFixed(2)}${pressureUnitLabel.value}</b>`
+        },
+      },
+    }),
     series: [
       {
         name: 'Pressure',
@@ -481,7 +597,17 @@ const createCharts = () => {
   })
 
   charts.alt = Highcharts.chart('an-chart-alt', {
-    ...HC({ xAxis: { type: 'datetime' } }),
+    ...HC({
+      xAxis: { type: 'datetime' },
+      yAxis: {
+        title: { text: `Altitude (${altitudeUnitLabel.value})`, style: { color: chartColors().title, fontSize: '10px' } },
+      },
+      tooltip: {
+        formatter() {
+          return `${Highcharts.dateFormat('%A, %b %e, %H:%M', this.x)}<br/>Altitude: <b>${this.y.toFixed(2)}${altitudeUnitLabel.value}</b>`
+        },
+      },
+    }),
     series: [
       {
         name: 'Altitude',
@@ -610,6 +736,22 @@ const runAnalysis = async () => {
 
 // Redraws temperature-based views when the unit changes.
 watch(tempUnit, () => {
+  renderMMAR()
+  if (analysisRows.value.length) {
+    renderCharts()
+  }
+})
+
+// Redraws altitude-based views when the unit changes.
+watch(altitudeUnit, () => {
+  renderMMAR()
+  if (analysisRows.value.length) {
+    renderCharts()
+  }
+})
+
+// Redraws pressure-based views when the unit label changes.
+watch(pressureUnit, () => {
   renderMMAR()
   if (analysisRows.value.length) {
     renderCharts()

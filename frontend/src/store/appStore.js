@@ -32,10 +32,16 @@ export const useAppStore = defineStore('app', () => {
     const latestReading = ref(null)
     const consoleLog = ref([])
     const tempUnit = ref('C')
+    const altitudeUnit = ref('m')
+    const pressureUnit = ref('hPa')
+    const humidityDisplayMode = ref('percent')
+    const soilDisplayMode = ref('percent')
     const themeMode = ref('dark')
 
     const toFahrenheit = (c) => +(c * 9 / 5 + 32).toFixed(2)
     const toCelsius = (f) => +((f - 32) * 5 / 9).toFixed(2)
+    const toFeet = (m) => +(m * 3.28084).toFixed(2)
+    const toMetres = (ft) => +(ft / 3.28084).toFixed(2)
 
     const convertTemp = (val) => {
         if (val == null || isNaN(val)) return null
@@ -44,6 +50,37 @@ export const useAppStore = defineStore('app', () => {
 
     const toggleUnit = () => {
         tempUnit.value = tempUnit.value === 'C' ? 'F' : 'C'
+    }
+
+    const convertAltitude = (val) => {
+        if (val == null || isNaN(val)) return null
+        return altitudeUnit.value === 'ft' ? toFeet(val) : +val.toFixed(2)
+    }
+
+    const convertPressure = (val) => {
+        if (val == null || isNaN(val)) return null
+        return +(+val).toFixed(2)
+    }
+
+    const convertRatioValue = (val) => {
+        if (val == null || isNaN(val)) return null
+        return +(+val).toFixed(2)
+    }
+
+    const toggleAltitudeUnit = () => {
+        altitudeUnit.value = altitudeUnit.value === 'm' ? 'ft' : 'm'
+    }
+
+    const togglePressureUnit = () => {
+        pressureUnit.value = pressureUnit.value === 'hPa' ? 'mb' : 'hPa'
+    }
+
+    const toggleHumidityDisplayMode = () => {
+        humidityDisplayMode.value = humidityDisplayMode.value === 'percent' ? 'fraction' : 'percent'
+    }
+
+    const toggleSoilDisplayMode = () => {
+        soilDisplayMode.value = soilDisplayMode.value === 'percent' ? 'fraction' : 'percent'
     }
 
     const toggleTheme = () => {
@@ -109,11 +146,24 @@ export const useAppStore = defineStore('app', () => {
         latestReading,
         consoleLog,
         tempUnit,
+        altitudeUnit,
+        pressureUnit,
+        humidityDisplayMode,
+        soilDisplayMode,
         themeMode,
         convertTemp,
+        convertAltitude,
+        convertPressure,
+        convertRatioValue,
         toFahrenheit,
         toCelsius,
+        toFeet,
+        toMetres,
         toggleUnit,
+        toggleAltitudeUnit,
+        togglePressureUnit,
+        toggleHumidityDisplayMode,
+        toggleSoilDisplayMode,
         toggleTheme,
         pushLog,
         getAllInRange,

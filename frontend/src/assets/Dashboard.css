@@ -49,7 +49,7 @@
 }
 
 /*  HERO CARD  */
-.hero-card { display: flex; flex-direction: column; justify-content: space-between; }
+.hero-card { display: flex; flex-direction: column; justify-content: flex-start; }
 
 .hero-top {
   display: flex;
@@ -82,6 +82,19 @@
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 20px;
+}
+.hero-date {
+  display: flex;
+  margin-top: 16px;
+}
+.hero-date-pill {
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  padding: 8px 14px;
+  color: #ffd86e;
+  background: rgba(255, 216, 110, 0.12);
+  border-color: rgba(255, 216, 110, 0.28);
+  box-shadow: 0 10px 24px rgba(10, 20, 40, 0.18);
 }
 .meta-pill {
   display: inline-flex;
@@ -118,6 +131,24 @@
   transition: all 0.25s;
 }
 .toggle-btn.active {
+  background: var(--panel-strong);
+  color: var(--txt);
+}
+.unit-toggle-compact {
+  padding: 2px;
+}
+.toggle-btn-compact {
+  padding: 4px 12px;
+  font-size: 12px;
+}
+.toggle-btn-single {
+  min-width: 44px;
+  padding-left: 14px;
+  padding-right: 14px;
+  font-size: 15px;
+  line-height: 1;
+}
+.toggle-btn-single:active {
   background: var(--panel-strong);
   color: var(--txt);
 }

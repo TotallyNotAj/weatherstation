@@ -54,6 +54,12 @@
                 @click="setUnit('F')"
               >°F</button>
             </div>
+            <div class="hero-date mt-4">
+              <span class="meta-pill hero-date-pill">
+                <v-icon icon="mdi:mdi-calendar-month-outline" size="14" class="mr-1" />
+                {{ todayDate }}
+              </span>
+            </div>
           </div>
         </v-col>
 
@@ -67,7 +73,13 @@
                   <v-icon icon="mdi:mdi-water-percent" size="22" color="#579ac2" />
                   <span class="stat-label">Humidity</span>
                 </div>
-                <div class="stat-value" style="color:#579ac2">{{ fmt(payload?.humidity, '%') }}</div>
+                <div class="stat-value" style="color:#579ac2">{{ displayHumidity }}</div>
+                <div class="unit-toggle unit-toggle-compact mt-3">
+                  <button
+                    class="toggle-btn toggle-btn-compact toggle-btn-single"
+                    @click="toggleHumidityFormat"
+                  >&#8646;</button>
+                </div>
                 <div class="mini-bar-track">
                   <div class="mini-bar" :style="{ width: barW(payload?.humidity, 0, 100), background: '#579ac2' }" />
                 </div>
@@ -80,7 +92,19 @@
                   <v-icon icon="mdi:mdi-gauge" size="22" color="#ffd86e" />
                   <span class="stat-label">Pressure</span>
                 </div>
-                <div class="stat-value" style="color:#ffd86e">{{ fmt(payload?.pressure, ' hPa') }}</div>
+                <div class="stat-value" style="color:#ffd86e">{{ displayPressure }}</div>
+                <div class="unit-toggle unit-toggle-compact mt-3">
+                  <button
+                    class="toggle-btn toggle-btn-compact"
+                    :class="{ active: pressureUnit === 'hPa' }"
+                    @click="setPressureUnit('hPa')"
+                  >hPa</button>
+                  <button
+                    class="toggle-btn toggle-btn-compact"
+                    :class="{ active: pressureUnit === 'mb' }"
+                    @click="setPressureUnit('mb')"
+                  >mb</button>
+                </div>
                 <div class="mini-bar-track">
                   <div class="mini-bar" :style="{ width: barW(payload?.pressure, 970, 1050), background: '#ffd86e' }" />
                 </div>
@@ -93,9 +117,21 @@
                   <v-icon icon="mdi:mdi-waves-arrow-up" size="22" color="#66b85f" />
                   <span class="stat-label">Altitude</span>
                 </div>
-                <div class="stat-value" style="color:#66b85f">{{ fmt(payload?.altitude, ' m') }}</div>
+                <div class="stat-value" style="color:#66b85f">{{ displayAltitude }}</div>
+                <div class="unit-toggle unit-toggle-compact mt-3">
+                  <button
+                    class="toggle-btn toggle-btn-compact"
+                    :class="{ active: altitudeUnit === 'm' }"
+                    @click="setAltitudeUnit('m')"
+                  >m</button>
+                  <button
+                    class="toggle-btn toggle-btn-compact"
+                    :class="{ active: altitudeUnit === 'ft' }"
+                    @click="setAltitudeUnit('ft')"
+                  >ft</button>
+                </div>
                 <div class="mini-bar-track">
-                  <div class="mini-bar" :style="{ width: barW(payload?.altitude, 0, 500), background: '#66b85f' }" />
+                  <div class="mini-bar" :style="{ width: altitudeBarWidth, background: '#66b85f' }" />
                 </div>
               </div>
             </v-col>
@@ -106,7 +142,13 @@
                   <v-icon icon="mdi:mdi-sprout" size="22" color="#8760b5" />
                   <span class="stat-label">Soil Moisture</span>
                 </div>
-                <div class="stat-value" style="color:#8760b5">{{ fmt(payload?.soil, '%') }}</div>
+                <div class="stat-value" style="color:#8760b5">{{ displaySoil }}</div>
+                <div class="unit-toggle unit-toggle-compact mt-3">
+                  <button
+                    class="toggle-btn toggle-btn-compact toggle-btn-single"
+                    @click="toggleSoilFormat"
+                  >&#8646;</button>
+                </div>
                 <div class="mini-bar-track">
                   <div class="mini-bar" :style="{ width: barW(payload?.soil, 0, 100), background: soilColor }" />
                 </div>
@@ -202,7 +244,7 @@ Exporting(Highcharts)
 const Mqtt     = useMqttStore()
 const AppStore = useAppStore()
 const { payload, payloadTopic } = storeToRefs(Mqtt)
-const { consoleLog, tempUnit, themeMode }  = storeToRefs(AppStore)
+const { consoleLog, tempUnit, altitudeUnit, pressureUnit, humidityDisplayMode, soilDisplayMode, themeMode }  = storeToRefs(AppStore)
 
 // STATE 
 // Tracks when the most recent payload arrived.
@@ -213,6 +255,7 @@ const humChart  = ref(null)
 const points    = ref(30)
 const shift     = ref(false)
 const currentTime = ref('')
+const todayDate = ref('')
 const consoleEl   = ref(null)
 let clockTimer    = null
 
@@ -239,6 +282,52 @@ const displayHeatIndex = computed(() => {
   return tempUnit.value === 'F'
     ? AppStore.toFahrenheit(v).toFixed(1)
     : v.toFixed(1)
+})
+
+// Converts altitude into the selected distance unit.
+const displayAltitude = computed(() => {
+  const v = payload.value?.altitude
+  if (v == null) return '--'
+
+  return altitudeUnit.value === 'ft'
+    ? `${AppStore.toFeet(v).toFixed(1)} ft`
+    : `${parseFloat(v).toFixed(1)} m`
+})
+
+// Pressure uses equivalent values for hPa and mb, so only the label changes.
+const displayPressure = computed(() => {
+  const v = AppStore.convertPressure(payload.value?.pressure)
+  if (v == null) return '--'
+  return `${v.toFixed(1)} ${pressureUnit.value}`
+})
+
+// Humidity can be shown as a percentage or as a fraction out of 100.
+const displayHumidity = computed(() => {
+  const v = AppStore.convertRatioValue(payload.value?.humidity)
+  if (v == null) return '--'
+  return humidityDisplayMode.value === 'fraction'
+    ? `${v.toFixed(1)}/100`
+    : `${v.toFixed(1)}%`
+})
+
+// Soil moisture uses the same percent/fraction display pattern as humidity.
+const displaySoil = computed(() => {
+  const v = AppStore.convertRatioValue(payload.value?.soil)
+  if (v == null) return '--'
+  return soilDisplayMode.value === 'fraction'
+    ? `${v.toFixed(1)}/100`
+    : `${v.toFixed(1)}%`
+})
+
+// Keeps the altitude mini bar scaled to the active distance unit.
+const altitudeBarWidth = computed(() => {
+  const v = payload.value?.altitude
+  if (v == null) return '0%'
+
+  const altitudeValue = altitudeUnit.value === 'ft' ? AppStore.toFeet(v) : v
+  const altitudeMax = altitudeUnit.value === 'ft' ? AppStore.toFeet(500) : 500
+
+  return barW(altitudeValue, 0, altitudeMax)
 })
 
 // Picks the accent color for the main temperature card.
@@ -301,6 +390,16 @@ const deviceInfo = computed(() => [
     icon: 'mdi:mdi-thermometer',
     value: `°${tempUnit.value}`,
   },
+  {
+    label: 'Altitude Unit',
+    icon: 'mdi:mdi-ruler',
+    value: altitudeUnit.value,
+  },
+  {
+    label: 'Pressure Unit',
+    icon: 'mdi:mdi-gauge',
+    value: pressureUnit.value,
+  },
 ])
 
 // Helpers
@@ -319,6 +418,22 @@ const barW = (val, min, max) => {
 
 // Updates the shared temperature unit.
 const setUnit = (u) => { tempUnit.value = u }
+
+// Updates the shared altitude unit.
+const setAltitudeUnit = (u) => { altitudeUnit.value = u }
+
+// Updates the shared pressure unit.
+const setPressureUnit = (u) => { pressureUnit.value = u }
+
+// Toggles the humidity card between percent and fraction display.
+const toggleHumidityFormat = () => {
+  AppStore.toggleHumidityDisplayMode()
+}
+
+// Toggles the soil card between percent and fraction display.
+const toggleSoilFormat = () => {
+  AppStore.toggleSoilDisplayMode()
+}
 
 // Keeps chart text and borders in sync with the active theme.
 const chartColors = () => ({
@@ -442,7 +557,14 @@ onMounted(() => {
 
   // clock ticker
   const tick = () => {
-    currentTime.value = new Date().toLocaleTimeString()
+    const nowDate = new Date()
+    currentTime.value = nowDate.toLocaleTimeString()
+    todayDate.value = nowDate.toLocaleDateString(undefined, {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    })
     now.value = Date.now()
   }
   tick()

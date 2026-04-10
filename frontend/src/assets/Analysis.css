@@ -140,9 +140,17 @@
 }
 
 .mmar-title {
-  font-size: 10px;
+  font-size: 16px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+
+.theme-light .analysis .mmar-title {
+  text-shadow:
+    -0.5px 0 rgba(0, 0, 0, 0.28),
+    0.5px 0 rgba(0, 0, 0, 0.28),
+    0 -0.5px rgba(0, 0, 0, 0.28),
+    0 0.5px rgba(0, 0, 0, 0.28);
 }
 
 .mmar-avg {
@@ -152,10 +160,26 @@
   line-height: 1;
 }
 
+.theme-light .analysis .mmar-avg {
+  text-shadow:
+    -0.5px 0 rgba(0, 0, 0, 0.28),
+    0.5px 0 rgba(0, 0, 0, 0.28),
+    0 -0.5px rgba(0, 0, 0, 0.28),
+    0 0.5px rgba(0, 0, 0, 0.28);
+}
+
 .mmar-unit {
-  font-size: 13px;
+  font-size: 16px;
   opacity: 0.6;
   margin-left: 2px;
+}
+
+.theme-light .analysis .mmar-unit {
+  text-shadow:
+    -0.5px 0 rgba(0, 0, 0, 0.28),
+    0.5px 0 rgba(0, 0, 0, 0.28),
+    0 -0.5px rgba(0, 0, 0, 0.28),
+    0 0.5px rgba(0, 0, 0, 0.28);
 }
 
 .mmar-stats {
